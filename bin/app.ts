@@ -1,10 +1,10 @@
 #!/usr/bin/env node
 import 'source-map-support/register';
 import * as cdk from 'aws-cdk-lib';
-import { CdkIntegrationTestsStack } from '../lib/cdk-integration-tests-stack';
+import { AppStack } from '../lib/app-stack';
 
 const app = new cdk.App();
-new CdkIntegrationTestsStack(app, 'CdkIntegrationTestsStack', {
+new AppStack(app, 'CdkIntegrationTestsStack', {
   /* If you don't specify 'env', this stack will be environment-agnostic.
    * Account/Region-dependent features and context lookups will not work,
    * but a single synthesized template can be deployed anywhere. */
