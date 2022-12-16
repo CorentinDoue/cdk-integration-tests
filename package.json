@@ -24,6 +24,8 @@
   "dependencies": {
     "@aws-cdk/aws-apigatewayv2-alpha": "^2.53.0-alpha.0",
     "@aws-cdk/aws-apigatewayv2-integrations-alpha": "^2.53.0-alpha.0",
+    "@aws-cdk/integ-runner": "^2.53.0",
+    "@aws-cdk/integ-tests-alpha": "^2.53.0-alpha.0",
     "@middy/core": "^4.0.0",
     "@middy/http-error-handler": "^4.0.0",
     "@middy/http-json-body-parser": "^4.0.0",

@@ -9,10 +9,12 @@ import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-al
 import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 
 export class AppStack extends cdk.Stack {
+  public table: Table;
+  public createNftFunction: NodejsFunction;
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
 
-    const table = new Table(this, "ApeNftTable", {
+    this.table = new Table(this, "ApeNftTable", {
       partitionKey: {
         name: PARTITION_KEY,
         type: AttributeType.STRING,
@@ -23,22 +25,22 @@ export class AppStack extends cdk.Stack {
       },
     });
 
-    const createNftFunction = new NodejsFunction(this, "CreateNft", {
+    this.createNftFunction = new NodejsFunction(this, "CreateNft", {
       memorySize: 1024,
       timeout: cdk.Duration.seconds(5),
       runtime: Runtime.NODEJS_16_X,
       handler: "handler",
       entry: path.join(__dirname, `/../src/createNft/createNft.ts`),
       environment: {
-        TABLE_NAME: table.tableName,
+        TABLE_NAME: this.table.tableName,
       },
     });
 
-    table.grantReadWriteData(createNftFunction);
+    this.table.grantReadWriteData(this.createNftFunction);
 
     const createNftIntegration = new HttpLambdaIntegration(
       "CreateNftIntegration",
-      createNftFunction
+      this.createNftFunction
     );
 
     const httpApi = new HttpApi(this, "HttpApi");
