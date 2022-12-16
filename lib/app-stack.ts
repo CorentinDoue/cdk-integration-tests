@@ -1,16 +1,21 @@
 import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
-import { NodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
-import { AttributeType, Table } from "aws-cdk-lib/aws-dynamodb";
+import { AttributeType } from "aws-cdk-lib/aws-dynamodb";
 import { PARTITION_KEY, SORT_KEY } from "../src/libs/keys";
-import { HttpLambdaIntegration } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
-import { HttpApi, HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
-import { EventBus, Rule } from "aws-cdk-lib/aws-events";
-import { LambdaFunction } from "aws-cdk-lib/aws-events-targets";
-import { Queue } from "aws-cdk-lib/aws-sqs";
+import { HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
+import { Table } from "./testableConstructs/Table";
+import { EventBus } from "./testableConstructs/EventBus";
+import { HttpApi } from "./testableConstructs/HttpApi";
+import { HttpLambdaIntegration } from "./testableConstructs/HttpLambdaIntegration";
+import { NodejsFunction } from "./testableConstructs/NodejsFunction";
+import { LambdaFunction } from "./testableConstructs/Target";
+import { Queue } from "./testableConstructs/Queue";
+import { Rule } from "./testableConstructs/Rule";
 
+// TODO class abstraite pour les construct qui ont un testUpConstruct et un testDownConstruct
+// TODO récupérer via Stack.of(scope) une props de la stack qui défini si les resources de test doivent être définie
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
@@ -38,18 +43,19 @@ export class AppStack extends cdk.Stack {
       runtime: Runtime.NODEJS_16_X,
       handler: "handler",
       entry: path.join(__dirname, `/../src/functions/syncNft/handler.ts`),
-      environment: {
+      getEnvironment: ({ table, eventBus }) => ({
         TABLE_NAME: table.tableName,
         EVENT_BUS_NAME: eventBus.eventBusName,
-      },
+      }),
+      dependencies: { table, eventBus },
     });
 
     table.grantReadWriteData(syncNftFunction);
     eventBus.grantPutEventsTo(syncNftFunction);
 
     const syncNftIntegration = new HttpLambdaIntegration(
-        "SyncNftIntegration",
-        syncNftFunction
+      "SyncNftIntegration",
+      syncNftFunction
     );
 
     httpApi.addRoutes({
@@ -64,6 +70,8 @@ export class AppStack extends cdk.Stack {
       runtime: Runtime.NODEJS_16_X,
       handler: "handler",
       entry: path.join(__dirname, `/../src/functions/forwardNft/handler.ts`),
+      getEnvironment: () => ({}),
+      dependencies: {},
     });
 
     new Rule(this, "OnNftSynced", {
