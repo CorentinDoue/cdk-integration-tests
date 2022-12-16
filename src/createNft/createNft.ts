@@ -9,6 +9,7 @@ import { BadRequest } from "http-errors";
 const RARITIES = ["common", "rare", "unique", "legendary"];
 
 const lambdaHandler = async (event: CreateNftInput) => {
+  console.log("event", JSON.stringify(event, null, 2));
   const { userId } = event.body;
   const nftId = ulid();
   const nft = {
@@ -21,6 +22,7 @@ const lambdaHandler = async (event: CreateNftInput) => {
   try {
     await NftEntity.put(nft);
   } catch (err) {
+    console.error("Error while saving nft", err);
     throw new BadRequest();
   }
 
