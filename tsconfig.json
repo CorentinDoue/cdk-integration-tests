@@ -18,8 +18,9 @@
     "experimentalDecorators": true,
     "strictPropertyInitialization": false,
     "typeRoots": ["./node_modules/@types"],
-    "esModuleInterop": true
+    "esModuleInterop": true,
+    "skipLibCheck": true,
   },
-  "exclude": ["node_modules", "cdk.out"],
+  "exclude": ["**/node_modules", "cdk.out"],
   "include": ["**/*.ts"]
 }
