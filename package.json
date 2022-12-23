@@ -5,10 +5,13 @@
     "app": "bin/app.js"
   },
   "scripts": {
+    "preinstall": "npx only-allow pnpm",
     "build": "tsc",
     "watch": "tsc -w",
     "test": "jest",
-    "cdk": "cdk"
+    "cdk": "cdk",
+    "deploy": "cdk deploy",
+    "start": "cdk watch"
   },
   "devDependencies": {
     "@types/babel__traverse": "7.18.2",
@@ -16,6 +19,7 @@
     "@types/node": "10.17.27",
     "@types/prettier": "2.6.0",
     "aws-cdk": "2.53.0",
+    "esbuild": "^0.16.10",
     "jest": "^27.5.1",
     "ts-jest": "^27.1.4",
     "ts-node": "^10.9.1",
