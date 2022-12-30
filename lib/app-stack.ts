@@ -45,6 +45,10 @@ export class AppStack extends cdk.Stack {
     const deadLetterQueue = new Queue(this, "DLQ");
 
     const httpApi = new HttpApi(this, "HttpApi");
+    new Config(this, "API_URL", {
+      dependencies: { httpApi },
+      getValue: ({ httpApi }) => httpApi.url as string, // url is defined because httpApi has default stage
+    });
 
     const syncNftFunction = new NodejsFunction(this, "SyncNft", {
       memorySize: 1024,
