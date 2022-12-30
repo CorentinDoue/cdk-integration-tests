@@ -2,8 +2,9 @@ import { EventBus as CdkEventBus, EventBusProps } from "aws-cdk-lib/aws-events";
 import { Construct } from "constructs";
 import { NodejsFunction } from "./NodejsFunction";
 import { Grant } from "aws-cdk-lib/aws-iam";
+import { TestableConstruct } from "./types";
 
-export class EventBus extends CdkEventBus {
+export class EventBus extends CdkEventBus implements TestableConstruct {
   testUpConstruct: CdkEventBus;
   testDownConstruct: CdkEventBus;
   constructor(scope: Construct, id: string, props?: EventBusProps) {

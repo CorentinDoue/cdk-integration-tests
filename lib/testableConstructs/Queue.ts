@@ -1,7 +1,8 @@
 import { Queue as CdkQueue, QueueProps } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
+import { TestableConstruct } from "./types";
 
-export class Queue extends CdkQueue {
+export class Queue extends CdkQueue implements TestableConstruct {
   testDownConstruct: CdkQueue;
   testUpConstruct: CdkQueue;
   constructor(scope: Construct, id: string, props?: QueueProps) {

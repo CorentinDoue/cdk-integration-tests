@@ -1,10 +1,10 @@
 import { NodejsFunction as CdkNodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
 import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs/lib/function";
 import { Construct } from "constructs";
-import { TestableDependency } from "./dependency";
+import { TestableConstruct } from "./types";
 
 const getDownDependencies = <
-  Dependencies extends Record<string, TestableDependency>
+  Dependencies extends Record<string, TestableConstruct>
 >(
   dependencies: Dependencies
 ): Dependencies =>
@@ -14,7 +14,7 @@ const getDownDependencies = <
   );
 
 export class NodejsFunction<
-  Dependencies extends Record<string, TestableDependency>
+  Dependencies extends Record<string, TestableConstruct>
 > extends CdkNodejsFunction {
   testFunction: CdkNodejsFunction;
   constructor(

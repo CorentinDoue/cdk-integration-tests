@@ -6,8 +6,9 @@ import {
   HttpRoute,
 } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "./HttpLambdaIntegration";
+import { TestableConstruct } from "./types";
 
-export class HttpApi extends CdkHttpApi {
+export class HttpApi extends CdkHttpApi implements TestableConstruct {
   testUpConstruct: CdkHttpApi;
   testDownConstruct: CdkHttpApi;
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
