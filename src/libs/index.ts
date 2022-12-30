@@ -1,2 +1,2 @@
-export { default as NftEntity } from "./apeNftEntity";
+export * from "./apeNftEntity";
 export * from "./entityHelpers";

@@ -6,7 +6,7 @@ import { PARTITION_KEY, SORT_KEY } from "./keys";
 export const buildNftPK = ({ userId }: { userId: string }) =>
   `USER_ID#${userId}`;
 
-const NftEntity = new Entity({
+export const NftEntity = new Entity({
   name: "NftEntity",
   attributes: {
     [PARTITION_KEY]: {
@@ -26,5 +26,3 @@ const NftEntity = new Entity({
   },
   table: apeNftTable,
 } as const);
-
-export default NftEntity;
