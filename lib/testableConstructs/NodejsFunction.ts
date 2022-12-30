@@ -1,17 +1,32 @@
 import { NodejsFunction as CdkNodejsFunction } from "aws-cdk-lib/aws-lambda-nodejs";
-import { NodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs/lib/function";
+import { NodejsFunctionProps as CdkNodejsFunctionProps } from "aws-cdk-lib/aws-lambda-nodejs/lib/function";
 import { Construct } from "constructs";
 import { TestableConstruct } from "./types";
+import { Config } from "./Config";
 
-const getDownDependencies = <
-  Dependencies extends Record<string, TestableConstruct>
->(
-  dependencies: Dependencies
-): Dependencies =>
-  Object.entries(dependencies).reduce(
-    (acc, [key, value]) => ({ ...acc, [key]: value.testDownConstruct }),
-    {} as Dependencies
+type NodejsFunctionProps = CdkNodejsFunctionProps & {
+  configs?: Config<any>[];
+};
+
+const mergeEnvironments = ({
+  environment,
+  configs,
+  testEnv,
+}: {
+  environment: Record<string, string> | undefined;
+  configs: Config<any>[] | undefined;
+  testEnv?: boolean;
+}): Record<string, string> | undefined => {
+  if (environment === undefined && configs === undefined) {
+    return undefined;
+  }
+  return Object.assign(
+    environment ?? {},
+    ...(configs ?? []).map((config) =>
+      testEnv ? config.testEnvironment : config.environment
+    )
   );
+};
 
 export class NodejsFunction<
   Dependencies extends Record<string, TestableConstruct>
@@ -20,20 +35,15 @@ export class NodejsFunction<
   constructor(
     scope: Construct,
     id: string,
-    props: Omit<NodejsFunctionProps, "environment"> & {
-      getEnvironment: (dependencies: Dependencies) => { [key: string]: string };
-      dependencies: Dependencies;
-    }
+    { environment, configs, ...restProps }: NodejsFunctionProps
   ) {
     super(scope, id, {
-      ...props,
-      environment: props.getEnvironment(props.dependencies),
+      ...restProps,
+      environment: mergeEnvironments({ environment, configs }),
     });
     this.testFunction = new CdkNodejsFunction(scope, `Test${id}`, {
-      ...props,
-      environment: props.getEnvironment(
-        getDownDependencies(props.dependencies)
-      ),
+      ...restProps,
+      environment: mergeEnvironments({ environment, configs, testEnv: true }),
     });
   }
 }

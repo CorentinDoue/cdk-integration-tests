@@ -13,6 +13,7 @@ import { NodejsFunction } from "./testableConstructs/NodejsFunction";
 import { LambdaFunction } from "./testableConstructs/Target";
 import { Queue } from "./testableConstructs/Queue";
 import { Rule } from "./testableConstructs/Rule";
+import { Config } from "./testableConstructs/Config";
 
 // TODO class abstraite pour les construct qui ont un testUpConstruct et un testDownConstruct
 // TODO récupérer via Stack.of(scope) une props de la stack qui défini si les resources de test doivent être définie
@@ -30,8 +31,16 @@ export class AppStack extends cdk.Stack {
         type: AttributeType.STRING,
       },
     });
+    const tableNameConfig = new Config(this, "TABLE_NAME", {
+      dependencies: { table },
+      getValue: ({ table }) => table.tableName,
+    });
 
     const eventBus = new EventBus(this, "EventBus");
+    const eventBusNameConfig = new Config(this, "EVENT_BUS_NAME", {
+      dependencies: { eventBus },
+      getValue: ({ eventBus }) => eventBus.eventBusName,
+    });
 
     const deadLetterQueue = new Queue(this, "DLQ");
 
@@ -43,11 +52,7 @@ export class AppStack extends cdk.Stack {
       runtime: Runtime.NODEJS_16_X,
       handler: "handler",
       entry: path.join(__dirname, `/../src/functions/syncNft/handler.ts`),
-      getEnvironment: ({ table, eventBus }) => ({
-        TABLE_NAME: table.tableName,
-        EVENT_BUS_NAME: eventBus.eventBusName,
-      }),
-      dependencies: { table, eventBus },
+      configs: [tableNameConfig, eventBusNameConfig],
     });
 
     table.grantReadWriteData(syncNftFunction);
@@ -70,8 +75,6 @@ export class AppStack extends cdk.Stack {
       runtime: Runtime.NODEJS_16_X,
       handler: "handler",
       entry: path.join(__dirname, `/../src/functions/forwardNft/handler.ts`),
-      getEnvironment: () => ({}),
-      dependencies: {},
     });
 
     new Rule(this, "OnNftSynced", {
