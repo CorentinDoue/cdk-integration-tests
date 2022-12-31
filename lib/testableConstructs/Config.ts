@@ -1,6 +1,7 @@
 import { Construct } from "constructs";
 import { TestableConstruct } from "./types";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
+import { syncConfigTypes } from "./configUtils";
 
 export const getDownDependencies = <
   Dependencies extends Record<string, TestableConstruct>
@@ -40,6 +41,7 @@ export class Config<
   testEnvironment: Record<string, string>;
   constructor(scope: Construct, id: string, props: ConfigProps<Dependencies>) {
     super(scope, id);
+    syncConfigTypes(id);
     const value = props.getValue(props.dependencies);
     const testDownValue = props.getValue(
       getDownDependencies(props.dependencies)
