@@ -2,6 +2,7 @@ import { describe, expect, it } from "vitest";
 import { NftEntity } from "../src/libs/apeNftEntity";
 import { ulid } from "ulid";
 import axios from "axios";
+import { Config } from "../src/config";
 
 const userId = "Corentin";
 describe("syncNft", () => {
@@ -12,7 +13,7 @@ describe("syncNft", () => {
       userId,
       nftId: ulid(),
     });
-    const response = await axios.post(`${process.env.API_URL}/sync-nft`, {
+    const response = await axios.post(`${Config.testUp.API_URL}/sync-nft`, {
       userId,
     });
     expect(response.status).toBe(200);
