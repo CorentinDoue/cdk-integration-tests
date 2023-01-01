@@ -2,6 +2,11 @@ import { Construct } from "constructs";
 import { TestableConstruct } from "./types";
 import { StringParameter } from "aws-cdk-lib/aws-ssm";
 import { syncConfigTypes } from "./configUtils";
+import {
+  downstreamConfigParameterPath,
+  testConfigParameterPath,
+  upstreamConfigParameterPath,
+} from "./configConsts";
 
 export const getDownDependencies = <
   Dependencies extends Record<string, TestableConstruct>
@@ -48,7 +53,12 @@ export class Config<
     );
     new StringParameter(scope, `${id}_TestDownParameter`, {
       stringValue: testDownValue,
-      parameterName: `${id}_TestDownParameter`,
+      parameterName: [
+        "", // parameter path must start with a slash
+        testConfigParameterPath,
+        downstreamConfigParameterPath,
+        id,
+      ].join("/"),
     });
 
     const upDependencies = getUpDependencies(props.dependencies);
@@ -56,7 +66,12 @@ export class Config<
       const testUpValue = props.getValue(upDependencies);
       new StringParameter(scope, `${id}_TestUpParameter`, {
         stringValue: testUpValue,
-        parameterName: `${id}_TestUpParameter`,
+        parameterName: [
+          "", // parameter path must start with a slash
+          testConfigParameterPath,
+          upstreamConfigParameterPath,
+          id,
+        ].join("/"),
       });
     }
 
