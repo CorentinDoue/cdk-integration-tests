@@ -56,6 +56,9 @@ export class AppStack extends cdk.Stack {
       runtime: Runtime.NODEJS_16_X,
       handler: "handler",
       entry: path.join(__dirname, `/../src/functions/syncNft/handler.ts`),
+      environment: {
+        NODE_OPTIONS: "--enable-source-maps",
+      },
       configs: [tableNameConfig, eventBusNameConfig],
     });
 
@@ -79,6 +82,9 @@ export class AppStack extends cdk.Stack {
       runtime: Runtime.NODEJS_16_X,
       handler: "handler",
       entry: path.join(__dirname, `/../src/functions/forwardNft/handler.ts`),
+      environment: {
+        NODE_OPTIONS: "--enable-source-maps",
+      },
     });
 
     new Rule(this, "OnNftSynced", {
