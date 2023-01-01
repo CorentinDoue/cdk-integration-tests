@@ -2,7 +2,7 @@ import * as cdk from "aws-cdk-lib";
 import { Construct } from "constructs";
 import { Runtime } from "aws-cdk-lib/aws-lambda";
 import * as path from "path";
-import { AttributeType } from "aws-cdk-lib/aws-dynamodb";
+import { AttributeType, BillingMode } from "aws-cdk-lib/aws-dynamodb";
 import { PARTITION_KEY, SORT_KEY } from "../src/libs/keys";
 import { HttpMethod } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { Table } from "./testableConstructs/Table";
@@ -30,6 +30,7 @@ export class AppStack extends cdk.Stack {
         name: SORT_KEY,
         type: AttributeType.STRING,
       },
+      billingMode: BillingMode.PAY_PER_REQUEST,
     });
     const tableNameConfig = new Config(this, "TABLE_NAME", {
       dependencies: { table },
