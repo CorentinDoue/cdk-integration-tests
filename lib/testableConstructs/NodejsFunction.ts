@@ -3,7 +3,7 @@ import { NodejsFunctionProps as CdkNodejsFunctionProps } from "aws-cdk-lib/aws-l
 import { Construct } from "constructs";
 import { TestableConstruct } from "./types";
 import { Config } from "./Config";
-import { getTestStack } from "./testStack";
+import { getTestStack, shouldDeployTestConstructs } from "./testStack";
 
 type NodejsFunctionProps = CdkNodejsFunctionProps & {
   configs?: Config<any>[];
@@ -42,10 +42,12 @@ export class NodejsFunction<
       ...restProps,
       environment: mergeEnvironments({ environment, configs }),
     });
-    const testStack = getTestStack();
-    this.testFunction = new CdkNodejsFunction(testStack, `Test${id}`, {
-      ...restProps,
-      environment: mergeEnvironments({ environment, configs, testEnv: true }),
-    });
+    if (shouldDeployTestConstructs(scope)) {
+      const testStack = getTestStack();
+      this.testFunction = new CdkNodejsFunction(testStack, `Test${id}`, {
+        ...restProps,
+        environment: mergeEnvironments({ environment, configs, testEnv: true }),
+      });
+    }
   }
 }

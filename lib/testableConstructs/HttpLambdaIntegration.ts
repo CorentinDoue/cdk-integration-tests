@@ -3,6 +3,7 @@ import {
   HttpLambdaIntegrationProps,
 } from "@aws-cdk/aws-apigatewayv2-integrations-alpha";
 import { NodejsFunction } from "./NodejsFunction";
+import { shouldDeployTestConstructs } from "./testStack";
 
 export class HttpLambdaIntegration extends CdkHttpLambdaIntegration {
   testUpConstruct: CdkHttpLambdaIntegration;
@@ -12,10 +13,12 @@ export class HttpLambdaIntegration extends CdkHttpLambdaIntegration {
     props?: HttpLambdaIntegrationProps
   ) {
     super(id, handler, props);
-    this.testUpConstruct = new CdkHttpLambdaIntegration(
-      `TestUp${id}`,
-      handler.testFunction,
-      props
-    );
+    if (shouldDeployTestConstructs(handler)) {
+      this.testUpConstruct = new CdkHttpLambdaIntegration(
+        `TestUp${id}`,
+        handler.testFunction,
+        props
+      );
+    }
   }
 }

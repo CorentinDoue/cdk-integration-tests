@@ -13,3 +13,6 @@ export const getTestStack = (): NestedStack => {
   }
   return testStack;
 };
+
+export const shouldDeployTestConstructs = (scope: Construct): boolean =>
+  scope.node.tryGetContext("deployTestConstructs") ?? false;
