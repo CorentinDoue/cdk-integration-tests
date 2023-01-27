@@ -1,13 +1,15 @@
 import { Queue as CdkQueue, QueueProps } from "aws-cdk-lib/aws-sqs";
 import { Construct } from "constructs";
 import { TestableConstruct } from "./types";
+import { getTestStack } from "./testStack";
 
 export class Queue extends CdkQueue implements TestableConstruct {
   testDownConstruct: CdkQueue;
   testUpConstruct: CdkQueue;
   constructor(scope: Construct, id: string, props?: QueueProps) {
     super(scope, id, props);
-    this.testDownConstruct = new CdkQueue(scope, `TestDown${id}`, props);
-    this.testUpConstruct = new CdkQueue(scope, `TestUp${id}`, props);
+    const testStack = getTestStack();
+    this.testDownConstruct = new CdkQueue(testStack, `TestDown${id}`, props);
+    this.testUpConstruct = new CdkQueue(testStack, `TestUp${id}`, props);
   }
 }

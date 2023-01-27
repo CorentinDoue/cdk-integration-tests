@@ -5,6 +5,7 @@ import {
 import { Construct } from "constructs";
 import { EventBus } from "./EventBus";
 import { LambdaFunction } from "./Target";
+import { getTestStack } from "./testStack";
 
 type RuleProps = Omit<CdkRuleProps, "targets" | "eventBus"> & {
   eventBus: EventBus;
@@ -15,7 +16,8 @@ export class Rule extends CdkRule {
 
   constructor(scope: Construct, id: string, props: RuleProps) {
     super(scope, id, props);
-    this.testConstruct = new CdkRule(scope, `Test${id}`, {
+    const testStack = getTestStack();
+    this.testConstruct = new CdkRule(testStack, `Test${id}`, {
       ...props,
       eventBus: props.eventBus.testUpConstruct,
       targets: props.targets.map((target) => target.testConstruct),

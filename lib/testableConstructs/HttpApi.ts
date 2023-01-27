@@ -7,14 +7,16 @@ import {
 } from "@aws-cdk/aws-apigatewayv2-alpha";
 import { HttpLambdaIntegration } from "./HttpLambdaIntegration";
 import { TestableConstruct } from "./types";
+import { getTestStack } from "./testStack";
 
 export class HttpApi extends CdkHttpApi implements TestableConstruct {
   testUpConstruct: CdkHttpApi;
   testDownConstruct: CdkHttpApi;
   constructor(scope: Construct, id: string, props?: HttpApiProps) {
     super(scope, id, props);
-    this.testUpConstruct = new CdkHttpApi(scope, `TestUp${id}`, props);
-    this.testDownConstruct = new CdkHttpApi(scope, `TestDown${id}`, props);
+    const testStack = getTestStack();
+    this.testUpConstruct = new CdkHttpApi(testStack, `TestUp${id}`, props);
+    this.testDownConstruct = new CdkHttpApi(testStack, `TestDown${id}`, props);
   }
 
   addRoutes(

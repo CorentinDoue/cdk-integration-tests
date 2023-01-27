@@ -7,6 +7,7 @@ import {
   testConfigParameterPath,
   upstreamConfigParameterPath,
 } from "./configConsts";
+import { getTestStack } from "./testStack";
 
 export const getDownDependencies = <
   Dependencies extends Record<string, TestableConstruct>
@@ -46,12 +47,13 @@ export class Config<
   testEnvironment: Record<string, string>;
   constructor(scope: Construct, id: string, props: ConfigProps<Dependencies>) {
     super(scope, id);
+    const testStack = getTestStack();
     syncConfigTypes(id);
     const value = props.getValue(props.dependencies);
     const testDownValue = props.getValue(
       getDownDependencies(props.dependencies)
     );
-    new StringParameter(scope, `${id}_TestDownParameter`, {
+    new StringParameter(testStack, `${id}_TestDownParameter`, {
       stringValue: testDownValue,
       parameterName: [
         "", // parameter path must start with a slash
@@ -64,7 +66,7 @@ export class Config<
     const upDependencies = getUpDependencies(props.dependencies);
     if (areAllDependenciesDefined(upDependencies)) {
       const testUpValue = props.getValue(upDependencies);
-      new StringParameter(scope, `${id}_TestUpParameter`, {
+      new StringParameter(testStack, `${id}_TestUpParameter`, {
         stringValue: testUpValue,
         parameterName: [
           "", // parameter path must start with a slash

@@ -14,12 +14,15 @@ import { LambdaFunction } from "./testableConstructs/Target";
 import { Queue } from "./testableConstructs/Queue";
 import { Rule } from "./testableConstructs/Rule";
 import { Config } from "./testableConstructs/Config";
+import { initTestStack } from "./testableConstructs/testStack";
 
 // TODO class abstraite pour les construct qui ont un testUpConstruct et un testDownConstruct
 // TODO récupérer via Stack.of(scope) une props de la stack qui défini si les resources de test doivent être définie
 export class AppStack extends cdk.Stack {
   constructor(scope: Construct, id: string, props?: cdk.StackProps) {
     super(scope, id, props);
+
+    initTestStack(this);
 
     const table = new Table(this, "ApeNftTable", {
       partitionKey: {
